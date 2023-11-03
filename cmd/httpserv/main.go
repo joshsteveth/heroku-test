@@ -8,9 +8,15 @@ import (
 )
 
 // Port we listen on.
-const portNum string = ":8080"
+// const portNum string = ":8080"
+
+var port = os.Getenv("PORT")
 
 func main() {
+	if port == "" {
+		port = "8080"
+	}
+
 	logger := log.New(os.Stdout, "", log.Ltime+log.Ldate)
 	logger.Println("Starting our simple http server.")
 
@@ -18,10 +24,10 @@ func main() {
 	http.Handle("/", loggerMiddleware(logger, http.HandlerFunc(Home)))
 	http.Handle("/info", loggerMiddleware(logger, http.HandlerFunc(Info)))
 
-	logger.Println("Started on port", portNum)
+	logger.Println("Started on port", port)
 
 	// Spinning up the server.
-	err := http.ListenAndServe(portNum, nil)
+	err := http.ListenAndServe(fmt.Sprintf("0.0.0.0:%s", port), nil)
 	if err != nil {
 		logger.Fatal(err)
 	}
